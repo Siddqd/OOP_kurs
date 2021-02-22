@@ -236,15 +236,13 @@ int MedPatient::ShowDataScr(const char* filePat) { //fio2 поиск по фио
 int MedPatient::AddNewData(const char* filePat) {
 	std::string bar;
 	int idpp = 0, sum_pat = 0;
-	std::fstream fPat(filePat,std::ios::out);
-	fPat.close();
-	fPat.open(filePat,std::ios::in);
-	
+	std::fstream fPat("fileID.txt",std::ios::in|std::ios::beg);
+	//fPat.close();
 	//fPat.open(filePat, std::ios::in );	//открываем файл для чтения
 	
 	try {
 			//проверка открытия файла
-		if (fPat.peek() == EOF) throw 0;		//смотрим первый символ, если конец файла, то пусто
+		if (fPat.eof()) throw 0;		
 		fPat >> sum_pat;						//считали текущее общее количество пациентов
 		if (sum_pat >= MaxPatient) throw "sorrY_Clinic_Overflow"; //если больше равно макс - клиника переполнена
 		fPat >> idpp;					// считали последний занятый ID пациента
@@ -256,37 +254,37 @@ int MedPatient::AddNewData(const char* filePat) {
 	++idpp;			//записываем ID для нового-текущего пациента
 		//fPat.seekg(0, std::ios::beg);//встаем в начало файла
 	fPat.close();
-	fPat.open(filePat, std::ios::out); //открываем для файл для записи
+	fPat.open("fileID.txt", std::ios::out|std::ios::beg); //открываем для файл для записи
 	fPat << sum_pat <<" "<< idpp;	//пишем новое значения общего числа пациентов и номер нового крайнего
 	fPat.close();
 	id = idpp;
 	//ввод данных нового пациента
 	//std::getline(std::cin , bar);
 	std::getchar();//считываем символ /n после cin char из selectItem
-	std::cout<<"Введите ФИО (через пробел) : ";
-	std::getline(std::cin, fio);std::cout <<'\n'<< fio<<'\n';
-	std::cout<<"Введите день, месяц и год рождения(через пробел) : " ;
+	std::cout<<"Enter FIO (throw space) : ";
+	std::getline(std::cin, fio);//std::cout <<'\n'<< fio<<'\n';
+	std::cout<<"Enter day, month and year of bday(throw space) : " ;
 	std::cin>>bday.day>>bday.month>>bday.year;
 	try {
 				if (bday.day<1||bday.day>31||bday.month<1||bday.month>12||bday.year<1910|| bday.year>2021) throw "Error_bday_input";
 	} catch (const char* err) {	std::cout << err << '\n';	return -1;	}	
 				
 	do  {
-		std::cout<<"Введите номер сотового телефона : " ;
+		std::cout<<"Enter num cell phone : " ;
 		std::cin>>tel;
-	} while (tel > 89999999999);
-	std::cout<<"Введите номер телефона родственника : " ;
+	} while (tel > 89999999999 || tel < 0);
+	std::cout<<"Enter relative num phone  : " ;
 	std::cin>>res_tel;
-	std::cout<<"Введите номер медицинского полиса : ";
+	std::cout<<"Enter med card ID : ";
 	std::cin>>polis;
-	status=1;std::cout<<"Статус нового пациента установлен : 1 - В больнице \n";
-	std::cout<<"Введите номер палаты : "; //можно выводить список ближайших свободных палат
+	status=1;std::cout<<"Status of new patient is set in : 1 - At hospital \n";
+	std::cout<<"Enter chamber num : "; //можно выводить список ближайших свободных палат
 	std::cin>>room_id;
-	std::cout<<"Введите id врача : ";		//можно выводить список врачей
+	std::cout<<"Enter id doc : ";		//можно выводить список врачей
 	std::cin>>doc_id;
 
-	
-	fPat.open(filePat,std::ios::out|std::ios::app);	//добавляем нового пациента в конец файла
+	fPat.clear();
+	fPat.open(filePat,std::ios::app);	//добавляем нового пациента в конец файла
 	fPat <<"\nIDP " << id << "\nFIO "<< fio<< "\nBDAY " <<bday.day<<" "<<bday.month<<" "<<
 		bday.year<<"\nTEL "<<tel<<"\nRES_TEL "<<res_tel<<"\nPOLIS "<<polis
 		<<"\nSTATUS "<<status<<"\nROOM_ID " <<room_id<<"\nDOC_ID "<<doc_id;

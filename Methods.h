@@ -29,7 +29,7 @@ void mainMenu() {
   std::cout<<" 2) View med.card info /using Med_Card_ID >> \n";
 
   std::cout<<" 3) View list of free Med_rooms(chambers) >> \n";
-                                                    //сначала добавляем пациента, потом мед карту
+                                                        //сначала добавляем пациента, потом мед карту
   std::cout<<" 4) Add new med.card/patient >> \n";    //если уже существует, изменяем данные(номер палаты, лечящего врача
                                                     //, дописываем историю болезни)
   std::cout<<" 5) Change the patient info(status or add new recs) >> \n";       //выписка пациента - освобождение палаты, смена статуса

@@ -157,6 +157,7 @@
     <ClInclude Include="Methods.h" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="fileID.txt" />
     <Text Include="filePatient.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

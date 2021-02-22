@@ -64,5 +64,8 @@
     <Text Include="filePatient.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
+    <Text Include="fileID.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
   </ItemGroup>
 </Project>
