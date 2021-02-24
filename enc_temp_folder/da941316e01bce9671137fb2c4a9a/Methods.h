@@ -58,15 +58,15 @@ void selectItem(char tmp) {
             getchar();
             getline(std::cin,bufStr);
             medP.setFio(bufStr);
-  			std::cout<<"Enter day month year of bday(throw space) " ;
-            std::cout<<"(to search just by FIO, enter the bday day = 0)";
+  			std::cout<<"Enter day, month and year of bday(throw space) : " ;
+            std::cout<<"(to search just by FIO, enter the bday day = 0 )";
             std::cin >> bufDat.day >> bufDat.month >> bufDat.year;
             medP.setBday(bufDat);
           
         }
 
 
-        if (medP.ShowDataScr("filePatient.txt") == -1) std::cout <<'\n'<< "ErrorrE";
+        if (medP.ShowDataScr("filePatient.txt") == -1) std::cout << "ErrorrE";
         system("pause");
         break;
 

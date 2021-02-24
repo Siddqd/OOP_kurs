@@ -158,17 +158,17 @@ int MedPatient::ShowDataScr(const char* filePat) { //fio2 поиск по фио
 	std::string bar;
 	std::string foo;
 
-	std::fstream fPat;
-	fPat.open(filePat);
+	std::fstream fPat(filePat);
+	
 
 	try {									        					//и сравниваем со значениями в файле пациентов
 			
-			if (fPat.is_open()) throw "Error_OpenFile";
+			if (!fPat.is_open()) throw "Error_OpenFile";
 			if (fPat.eof()) throw "Error_filePatient_is_EMPTY";
 	}	catch(const char* er) {std::cout<< er; fPat.close(); return -1;}
 
-	fPat>>bar;                    // считываем первую строку - общее кол-во пациентов
-	fPat>>bar;										// 2ю строку - номер крайнего пациента
+	//fPat>>bar;                    // считываем первую строку - общее кол-во пациентов
+	//fPat>>bar;										// 2ю строку - номер крайнего пациента
 																		//просто для пролистывания,хотя можно и вывести
 	while (!fPat.eof()) {
 		fPat>>bar;										//считываем сигнатуру IDP
@@ -177,14 +177,15 @@ int MedPatient::ShowDataScr(const char* filePat) { //fio2 поиск по фио
 		if (id!=idpp){ //нужный пациент(выполнен поиск по ID) - пропускаем поиск по фио
 				fPat>>bar;						//считываем по идее FIO
 				if(bar!="FIO") continue;
-				//getchar();
-				getline(fPat, bar);							//считали фамилию , но с пробелом в начале
-				if(" "+fio!=bar) continue; 		//если == , значит фамилия найдена
+				fPat.get();
+				getline(fPat, bar);//считали фамилию , но с пробелом в начале
+				
+				if(fio!=bar) continue; 		//если == , значит фамилия найдена
 				fPat >> bar;										//считываем сигнатуру ДР
 				if (bar!="BDAY") return -1;		//если да, если нет ошибка :[]
 				fPat >> bdres.day >> bdres.month >> bdres.year;			//считываем ДР
 
-				if (bdres.day!=0)
+				if (bday.day!=0)
 					if (bdres.day!=bday.day || bdres.month!=bday.month || bdres.year!=bday.year) continue;
 					//если др не задано = 0, то пропускаем сравнение и выводим всех с такой ФИО
 					//сравниваем ДР с заданым, если нет идем к след фамилии
@@ -213,13 +214,13 @@ int MedPatient::ShowDataScr(const char* filePat) { //fio2 поиск по фио
 
 			} catch (const char* er) { std::cout << er;fPat.close();return -1; }
 			
-			if (bday.day==0) std::cout<<"							Patient  ID : "<<id<<'\n';
-			std::cout<<"					 			Full name : "<<fio<<'\n';
-			std::cout<<"				    Birthday date : " << bday.day << ' ' << bday.month << ' ' << bday.year << '\n';
+			if (bday.day==0) std::cout<<"Patient  ID : "<<id<<'\n';
+			std::cout<<"Full name : "<<fio<<'\n';
+			std::cout<<"Birthday date : " << bdres.day << ' ' << bdres.month << ' ' << bdres.year << '\n';
 			if (bday.day==0) continue;
-			std::cout<<"		 Patient phone number : "<<tel<<'\n';
+			std::cout<<"Patient phone number : "<<tel<<'\n';
 			std::cout<<"Phone number of relatives : "<<res_tel<<'\n';
-			std::cout<<"								Polis num : "<<polis<<'\n';
+			std::cout<<"Polis num : "<<polis<<'\n';
 			if (status==0) std::cout<<"Sry, patient is game over ..";
 			if (status==2) std::cout<<"Patient was discharged out ..";
 			if (status==1) std::cout<<"Patient now in chamber num : " <<room_id<<'\n';
