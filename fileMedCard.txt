@@ -1,0 +1,5 @@
+ID 1
+DATA 13 03 2020
+INFO Patient get in hospital with complains on abdominal pain
+TEST wbc 0.4 rbc 0.25
+CURE 12 mg amphetamine intravenously

@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdio>
 #include "MedPatient.h"
 #include "MedCard.h"
 #include "MedDoc.h"
@@ -83,7 +84,7 @@ void selectItem(char tmp) {
         break;
 
       case '5' :
-
+          medP.changeData("filePatient.txt");
         break;
 
       case '6' :

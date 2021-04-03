@@ -216,7 +216,7 @@ int MedPatient::ShowDataScr(const char* filePat) { //fio2 поиск по фио
 			
 			if (bday.day==0) std::cout<<"Patient  ID : "<<id<<'\n';
 			std::cout<<"Full name : "<<fio<<'\n';
-			std::cout<<"Birthday date : " << bdres.day << ' ' << bdres.month << ' ' << bdres.year << '\n';
+			std::cout<<"Birthday date : " << bday.day << ' ' << bday.month << ' ' << bday.year << '\n';
 			if (bday.day==0) continue;
 			std::cout<<"Patient phone number : "<<tel<<'\n';
 			std::cout<<"Phone number of relatives : "<<res_tel<<'\n';
@@ -290,5 +290,65 @@ int MedPatient::AddNewData(const char* filePat) {
 		bday.year<<"\nTEL "<<tel<<"\nRES_TEL "<<res_tel<<"\nPOLIS "<<polis
 		<<"\nSTATUS "<<status<<"\nROOM_ID " <<room_id<<"\nDOC_ID "<<doc_id;
 	fPat.close();
+	return 0;
+}
+
+int MedPatient::changeData(const char* filePat) {
+	int idpp = -1;										// , куда записываем фио и полис
+	int foo32;											//итоговый результат запись всех найденных данных в объект
+	int len=1;
+	int64_t foo64;
+	Data bdres;
+	std::string bar;
+	std::string foo;
+	//char* buffer;
+
+	std::fstream fPat(filePat);
+	try {									        					//и сравниваем со значениями в файле пациентов
+
+		if (!fPat.is_open()) throw "Error_OpenFile";
+		if (fPat.eof()) throw "Error_filePatient_is_EMPTY";
+	}
+	catch (const char* er) { std::cout << er; fPat.close(); return -1; }
+
+	std::ofstream f2Pat;
+	f2Pat.open("buf.txt", std::ofstream::out, std::ofstream::trunc);
+	f2Pat.close();
+	f2Pat.open("buf.txt");
+	try {									        					//и сравниваем со значениями в файле пациентов
+
+		if (!f2Pat.is_open()) throw "Error_OpenFile";
+		if (f2Pat.eof()) throw "Error_filePatient_is_EMPTY";
+	}
+	catch (const char* er) { std::cout << er; f2Pat.close(); return -1; }
+	f2Pat.clear();
+	std::cout << "\nEnter ID Patient to change : ";
+	std::cin >> id;					//считали id пациента, данные которого хотим поменять
+	//fPat>>bar;                    // считываем первую строку - общее кол-во пациентов
+	//fPat>>bar;										// 2ю строку - номер крайнего пациента
+																		//просто для пролистывания,хотя можно и вывести
+	while (!fPat.eof()) {
+		fPat >> bar;		//считываем сигнатуру IDP
+		if (bar != "IDP") continue;		//проверяем сигнатуру IDP, если нет то сначала //варик ? for(;bar!="IDP";	fPat>>bar)
+		fPat >> idpp;										//считали ID текущего пациента
+		if (id == idpp) { //нужный пациент(выполнен поиск по ID) - пропускаем поиск по фио
+			len = -1;
+			break;
+		}
+		else continue;
+	}
+	if (len == 1) std::cerr << "Error 404 ! No Data about entered ID :|";
+	//len = fPat.tellg();
+	//buffer = new char[len];
+	fPat.close();
+	fPat.open(filePat);
+	for (int i = 0;i < (id-1)*9;i++) {
+		getline(fPat,foo);
+		foo = foo + '\n';
+		f2Pat << foo;
+	}
+	//fPat.read(buffer, len);
+	//f2Pat.write(buffer, len);
+	//delete[] buffer;
 	return 0;
 }
