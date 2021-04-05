@@ -7,3 +7,5 @@ POLIS 1
 STATUS 1
 ROOM_ID 1
 DOC_ID 1
+IDP 2
+FIO Sid Dmitr Evg
