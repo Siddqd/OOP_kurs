@@ -295,12 +295,13 @@ int MedPatient::AddNewData(const char* filePat) {
 
 int MedPatient::changeData(const char* filePat) {
 	int idpp = -1;										// , куда записываем фио и полис
-	int foo32,bar32;											//итоговый результат запись всех найденных данных в объект
+	int foo32,bar32,old_stat=0,new_stat=0;											//итоговый результат запись всех найденных данных в объект
 	int len=1;
 	int64_t foo64;
 	Data bdres;
 	std::string bar;
 	std::string foo;
+	
 	//char* buffer;
 
 	std::fstream fPat(filePat);
@@ -338,7 +339,10 @@ int MedPatient::changeData(const char* filePat) {
 		}
 		else continue;
 	}
-	if (len == 1) std::cerr << "Error 404 ! No Data about entered ID :|";
+	if (len == 1) {
+		std::cerr << "Error 404 ! No Data about entered ID :|";
+		return -1;
+	}
 	//len = fPat.tellg();
 	//buffer = new char[len];
 	fPat.close();
@@ -349,11 +353,11 @@ int MedPatient::changeData(const char* filePat) {
 		f2Pat << foo;
 	}
 
-	
-	std::cout << "Enter 0 to delete patient data from base, or 1 to make change : ";
+	//перед удалением статус должен быть = 0
+	std::cout << "Enter 0 to delete patient, or 1 to make change : ";
 	std::cin >> foo32;
 	if (foo32==0)	//пропускаем 9 строк и начинаем запись во второй файл до конца файла
-		for (int i = 0;i < 9;i++) 
+		for (int i = 0;i < 8;i++) 
 			getline(fPat,foo);
 	
 	else {	//сюда попадаем если нужно изменять даунные пациента
@@ -371,13 +375,13 @@ int MedPatient::changeData(const char* filePat) {
 		fPat >> bar; //считали "BDAY"
 		getline(fPat, foo);
 		std::cout << "Current BDAY data : " << foo <<'\n';
-		std::cout << "\nEnter day, month and year of bday(throw space, enter 0 0 0 to stay w/o changes) : ";
+		std::cout << "Enter dd mm yyyy of bday(or enter 0 0 0 to stay w/o changes) : ";
 		std::cin >> bdres.day >> bdres.month >> bdres.year;
 		
 		if (bdres.day == 0) f2Pat << "BDAY " << foo << '\n';
 		else {
 			try {
-				if (bdres.day < 1 || bday.day>31 || bday.month < 1 || bday.month>12 || bday.year < 1910 || bday.year>2021) throw "Error_bday_data_input";
+				if (bdres.day < 1 || bdres.day>31 || bdres.month < 1 || bdres.month>12 || bdres.year < 1910 || bdres.year>2021) throw "Error_bday_data_input";
 			}
 			catch (const char* err) { std::cout << err << '\n';	return -1; }
 			f2Pat << "BDAY " << bdres.day << " " << bdres.month << " " << bdres.year << '\n';
@@ -386,10 +390,10 @@ int MedPatient::changeData(const char* filePat) {
 		fPat >> bar;
 		fPat >> bar32; //переместились
 		std::cout << "\nCurrent TEL : " << bar32;
-		do {
-			std::cout << "\nEnter num cell phone : ";
+		//do {
+			std::cout << "\nEnter num cell phone(0 - stay w/o changes): ";
 			std::cin >> tel;
-		} while (tel > 89999999999 || tel < 0);
+		//} while (tel > 89999999999 || tel < 0);
 		if (tel == 0) f2Pat << "TEL " << bar32 << '\n';
 		else f2Pat << "TEL " << tel << '\n';
 
@@ -397,7 +401,7 @@ int MedPatient::changeData(const char* filePat) {
 		fPat >> bar;
 		fPat >> bar32; //переместились
 		std::cout << "\nCurrent RES_TEL : " << bar32;
-		std::cout << "\nEnter relative num phone  : ";
+		std::cout << "\nEnter relative num phone (0 - stay w/o changes): ";
 		std::cin >> res_tel;
 		if (res_tel == 0) f2Pat << "RES_TEL " << bar32 << '\n';
 		else f2Pat << "RES_TEL " << res_tel << '\n';
@@ -405,7 +409,7 @@ int MedPatient::changeData(const char* filePat) {
 		fPat >> bar;
 		fPat >> foo64; //переместились,в foo64 текущий полис
 		std::cout << "Current POLIS : " << foo64;
-		std::cout << "\nEnter new POLIS num (or 0 to stay wthout changes) : ";
+		std::cout << "\nEnter new POLIS num (0 - stay w/o changes): ";
 		std::cin >> polis;
 		if (polis == 0) f2Pat << "POLIS " << foo64 << '\n';
 		else f2Pat << "POLIS " << polis << '\n';
@@ -413,18 +417,24 @@ int MedPatient::changeData(const char* filePat) {
 		fPat >> bar;
 		fPat >> bar32; //переместились, в bar32 текущий статус
 		std::cout << "Current status : " << bar32;
-		std::cout << "\nStatus of new patient is set in : 0 - Out of hospital, 1 - At hospital, 2 - Dead : \n";
-		std::cin >> status;
-		if (status == -1) f2Pat << "STATUS " << bar32 << '\n';
-		else f2Pat << "STATUS " << status << '\n';
-		
+		old_stat = bar32;
+		std::cout << "\nEnter status (0 - Out of hospital, 1 - At hospital, 2 - Dead): ";
+		std::cin >> new_stat;
+		//если статус изменен, надо убавить общ кол-во пациентов в fileID, и убавить кол-во пациентов в палате fileRoom
+		//if (status == -1) f2Pat << "STATUS " << bar32 << '\n';
+		f2Pat << "STATUS " << status << '\n';
+
 		fPat >> bar;
 		fPat >> bar32; //переместились, в bar32 текущий номер палаты
 		std::cout << "Current chamber num : " << bar32;
 		std::cout << "\nEnter chamber num(enter 0 to stay without changes) : "; //можно выводить список ближайших свободных палат
 		std::cin >> room_id;
-		if (room_id == 0) f2Pat << "ROOM_ID " << bar32<<'\n';
+		if (room_id == 0) {
+			f2Pat << "ROOM_ID " << bar32 << '\n'; 
+			room_id = bar32;
+		}
 		else f2Pat << "ROOM_ID " << room_id<<'\n';
+
 
 		fPat >> bar;
 		fPat >> bar32; //переместились
@@ -437,7 +447,8 @@ int MedPatient::changeData(const char* filePat) {
 	getline(fPat, bar);//считывается пустая строка , хз откуда :D
 	while (!fPat.eof()) {
 		getline(fPat, bar);
-		f2Pat << bar <<'\n';
+		if(!bar.empty())
+			f2Pat << bar <<'\n';
 	}
 	fPat.close();
 	f2Pat.close();
@@ -445,6 +456,51 @@ int MedPatient::changeData(const char* filePat) {
 	rename("buf.txt", filePat);
 	remove("1.txt");
 	
+	//начинаем изменять файлы fileID и fileRoom если статус был изменен определеным значением
+	if (old_stat != new_stat) {
+		std::fstream f3Pat("fileID.txt");
+		try {
+			if (!f3Pat.is_open()) throw "Error_OpenFile fileROom";
+			if (f3Pat.eof()) throw "Error_fileRoom_is_EMPTY";
+		}
+		catch (const char* er) { std::cout << er; f3Pat.close(); return -1; }
+		std::fstream f4Pat("fileRoom.txt");
+		try {
+			if (!f4Pat.is_open()) throw "Error_OpenFile fileRoom";
+			if (f4Pat.eof()) throw "Error_fileRoom_is_EMPTY";
+		}
+		catch (const char* er) { std::cout << er; f4Pat.close(); return -1; }
+
+		if (old_stat == 1) {
+			f3Pat >> bar >> bar32; //меняем значение общ количества пациентов в больнице
+			--bar32;
+			//f3Pat.clear();
+			f3Pat.close();
+			f3Pat.open("fileID.txt");
+			f3Pat << bar << ' ' << bar32;
+			f3Pat.close();
+
+			do {
+				f4Pat >> bar >> bar32;//считали idr
+				if (bar32 == room_id) {
+					f4Pat >> foo32; //считали текущще колво пациентов в палате из которой убираем пациента
+					--foo32;	//уменьшили кол-во
+					break;
+				}
+			} while (!f4Pat.eof());
+			f4Pat.close();
+			f4Pat.open("fileRoom.txt"); 
+			do {
+				f4Pat >> bar >> bar32;//считали idr
+				if (bar32 == room_id) break;
+			} while (!f4Pat.eof());
+			f4Pat << ' ' << foo32; //перезаписали новое уменьшенное количество пациентов
+		}
+		else if (old_stat == 0 && new_stat == 1) {
+		}
+		f4Pat.close()
+
+	}
 
 	//fPat.read(buffer, len);
 	//f2Pat.write(buffer, len);

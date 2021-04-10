@@ -17,14 +17,16 @@ struct Data {	//для упрощения , 12 месяцев по 30 дней +
 	int year;
 };
 
-class Med	{
+class Med 	{
 	protected:
 		int sum;
 		int id;
 		
 	public:
-		int getID() { return id; }
-		void setID(int idd) { id = idd; }
+		int getID(); //{ return id; }
+		void setID(int idd);// { id = idd; }
+		int getSum();// { return sum; }
+		void setSum(int summ);// { sum = summ; }
 
 		//virtual int ShowDataScr(const char*) ;
 		//virtual int AddNewData(const char*);

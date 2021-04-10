@@ -5,6 +5,7 @@
 #include "MedDoc.h"
 #include "MedRoom.h"
 
+
 void rabbit() {
     system("cls");
     std::string os2 = "",os1 = "";
@@ -41,6 +42,7 @@ void mainMenu() {
 };
 
 void selectItem(char tmp) {
+  MedRoom medR;
   MedPatient medP;
   Data bufDat;
   int bufInt;
@@ -84,6 +86,9 @@ void selectItem(char tmp) {
         break;
 
       case '5' :
+          std::cout << "Enter ID patient to change/delete : ";
+          medR.lookFreeNum(); //находим номер первой свободной палаты
+          std::cout << "Nearest free room № : " << medR.getIDR() << " and " << medR.getNum() << " places are taked";
           medP.changeData("filePatient.txt");
         break;
 
