@@ -276,7 +276,7 @@ int MedPatient::AddNewData(const char* filePat) {
 	} while (tel > 89999999999 || tel < 0);
 	std::cout<<"Enter relative num phone  : " ;
 	std::cin>>res_tel;
-	std::cout<<"Enter med card ID : ";
+	std::cout<<"Enter POLIS num : ";
 	std::cin>>polis;
 	status=1;std::cout<<"Status of new patient is set in : 1 - At hospital \n";
 	std::cout<<"Enter chamber num : "; //можно выводить список ближайших свободных палат
@@ -295,8 +295,8 @@ int MedPatient::AddNewData(const char* filePat) {
 
 int MedPatient::changeData(const char* filePat) {
 	int idpp = -1;										// , куда записываем фио и полис
-	int foo32,bar32,old_stat=0,new_stat=0;											//итоговый результат запись всех найденных данных в объект
-	int len=1;
+	int foo32,bar32,old_stat=0,new_stat=0;				//итоговый результат запись всех найденных данных в объект
+	int len = 1, old_room = 0, new_room = 0, old_room_num = 0, new_room_num = 0;
 	int64_t foo64;
 	Data bdres;
 	std::string bar;
@@ -415,31 +415,33 @@ int MedPatient::changeData(const char* filePat) {
 		else f2Pat << "POLIS " << polis << '\n';
 
 		fPat >> bar;
-		fPat >> bar32; //переместились, в bar32 текущий статус
-		std::cout << "Current status : " << bar32;
-		old_stat = bar32;
+		fPat >> old_stat; //переместились, в bar32 текущий статус
+		std::cout << "Current status : " << old_stat;
+		//old_stat = bar32;
 		std::cout << "\nEnter status (0 - Out of hospital, 1 - At hospital, 2 - Dead): ";
 		std::cin >> new_stat;
 		//если статус изменен, надо убавить общ кол-во пациентов в fileID, и убавить кол-во пациентов в палате fileRoom
 		//if (status == -1) f2Pat << "STATUS " << bar32 << '\n';
-		f2Pat << "STATUS " << status << '\n';
+		f2Pat << "STATUS " << new_stat << '\n';
 
 		fPat >> bar;
-		fPat >> bar32; //переместились, в bar32 текущий номер палаты
-		std::cout << "Current chamber num : " << bar32;
-		std::cout << "\nEnter chamber num(enter 0 to stay without changes) : "; //можно выводить список ближайших свободных палат
-		std::cin >> room_id;
-		if (room_id == 0) {
-			f2Pat << "ROOM_ID " << bar32 << '\n'; 
-			room_id = bar32;
+		fPat >> old_room; //переместились, в bar32 текущий номер палаты
+		if (old_stat == 1 && old_stat != new_stat) { //если пациент был выписан из больницы или умер, меняем номер палаты на 0
+			std::cout << "MedRoom # wil autoset in 0 (patient is out) \n";
+			f2Pat << "ROOM_ID " << 0 << '\n';
 		}
-		else f2Pat << "ROOM_ID " << room_id<<'\n';
+		else {
+			std::cout << "Current chamber(room) # : " << old_room;
+			std::cout << "\nEnter chamber(room) # (enter 0 to stay w/o changes) : "; //можно выводить список ближайших свободных палат
+			std::cin >> new_room;
+			f2Pat << "ROOM_ID " << new_room << '\n';
+		}
 
 
 		fPat >> bar;
 		fPat >> bar32; //переместились
 		std::cout << "Current doc id : " << bar32;
-		std::cout << "\nEnter id doc(enter 0 to stay without changes)) : ";		//можно выводить список врачей
+		std::cout << "\nEnter id doc(enter 0 to stay w/o changes)) : ";		//можно выводить список врачей
 		std::cin >> doc_id;
 		if (doc_id == 0) f2Pat << "DOC_ID " << bar32<<'\n';
 		else f2Pat << "DOC_ID " << doc_id<<'\n';
@@ -456,12 +458,46 @@ int MedPatient::changeData(const char* filePat) {
 	rename("buf.txt", filePat);
 	remove("1.txt");
 	
+	//перевод пациента в другую палату
+	if (old_stat == new_stat == 1 && old_room != new_room) {
+		std::fstream f4Pat("fileRoom.txt");
+		try {
+			if (!f4Pat.is_open()) throw "Error_OpenFile fileRoom";
+			if (f4Pat.eof()) throw "Error_fileRoom_is_EMPTY";
+		}
+		catch (const char* er) { std::cout << er; f4Pat.close(); return -1; }
+		do {
+			f4Pat >> bar >> bar32;//считали idr
+			if (bar32 == old_room) {
+				f4Pat>>old_room_num;
+			}
+			if (bar32 == new_room) {
+				f4Pat >> new_room_num; //считали текущее колво пациентов в палате из которой убираем/добавляем пациента
+				if (new_room_num > 3) {
+					std::cerr << " Error removing patient to new med room ! ";	//ошибка палата переполнена
+					return -1;
+				}
+			}
+		} while (!f4Pat.eof()||(new_room_num&&old_room_num));
+		f4Pat.close();
+		f4Pat.open("fileRoom.txt");
+		++new_room_num;
+		--old_room_num;
+		do {
+			f4Pat >> bar >> bar32;//считали idr
+			if (bar32 == old_room) f4Pat << ' ' << old_room_num;
+			else if (bar32 == new_room) f4Pat << ' ' << new_room_num;
+			else f4Pat >> bar32;
+		} while (!f4Pat.eof());
+		f4Pat.close();
+	}
+
 	//начинаем изменять файлы fileID и fileRoom если статус был изменен определеным значением
 	if (old_stat != new_stat) {
 		std::fstream f3Pat("fileID.txt");
 		try {
-			if (!f3Pat.is_open()) throw "Error_OpenFile fileROom";
-			if (f3Pat.eof()) throw "Error_fileRoom_is_EMPTY";
+			if (!f3Pat.is_open()) throw "Error_OpenFile fileID";
+			if (f3Pat.eof()) throw "Error_fileID_is_EMPTY";
 		}
 		catch (const char* er) { std::cout << er; f3Pat.close(); return -1; }
 		std::fstream f4Pat("fileRoom.txt");
@@ -469,11 +505,11 @@ int MedPatient::changeData(const char* filePat) {
 			if (!f4Pat.is_open()) throw "Error_OpenFile fileRoom";
 			if (f4Pat.eof()) throw "Error_fileRoom_is_EMPTY";
 		}
-		catch (const char* er) { std::cout << er; f4Pat.close(); return -1; }
+		catch (const char* er) { std::cout << er; f4Pat.close(); f3Pat.close(); return -1; }
 
-		if (old_stat == 1) {
+		if (old_stat == 1 || (old_stat == 0 && new_stat == 1)) {
 			f3Pat >> bar >> bar32; //меняем значение общ количества пациентов в больнице
-			--bar32;
+			if (old_stat == 1) --bar32; else ++bar32;
 			//f3Pat.clear();
 			f3Pat.close();
 			f3Pat.open("fileID.txt");
@@ -482,26 +518,24 @@ int MedPatient::changeData(const char* filePat) {
 
 			do {
 				f4Pat >> bar >> bar32;//считали idr
-				if (bar32 == room_id) {
-					f4Pat >> foo32; //считали текущще колво пациентов в палате из которой убираем пациента
-					--foo32;	//уменьшили кол-во
+				if (bar32 == new_room) {
+					f4Pat >> foo32; //считали текущее колво пациентов в палате из которой убираем/добавляем пациента
+					if (old_stat == 1) --foo32; else ++foo32;	//изменили кол-во
 					break;
 				}
+				f4Pat >> bar32; //пропускаем для перехода к след палате
 			} while (!f4Pat.eof());
 			f4Pat.close();
-			f4Pat.open("fileRoom.txt"); 
+			f4Pat.open("fileRoom.txt");
 			do {
 				f4Pat >> bar >> bar32;//считали idr
-				if (bar32 == room_id) break;
+				if (bar32 == new_room) break;
+				f4Pat >> bar32; //пропускаем кол-во пациентов в палате для перехода к след палате
 			} while (!f4Pat.eof());
 			f4Pat << ' ' << foo32; //перезаписали новое уменьшенное количество пациентов
 		}
-		else if (old_stat == 0 && new_stat == 1) {
-		}
-		f4Pat.close()
-
+		f4Pat.close();
 	}
-
 	//fPat.read(buffer, len);
 	//f2Pat.write(buffer, len);
 	//delete[] buffer;

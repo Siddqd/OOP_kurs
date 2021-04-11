@@ -1,6 +1,6 @@
 #pragma once
 #include "Med.h"
-const char* fileRoom = "fileRoom.txt"; //файл палат (IDR Num_room Num_taked_places   (предположим все палаты по 4 места),
+//const char* fileRoom = "fileRoom.txt"; //файл палат (IDR Num_room Num_taked_places   (предположим все палаты по 4 места),
 
 
 class MedRoom : public Med {
@@ -17,6 +17,6 @@ public:
 					  //0 - удачно , -1 - переполнено
 	int lookFreeNum();//уст-ет значения класса номер и кол-во занятых мест первой не заполненой полностью палаты(не требует входных данных)
 	void getRoomNum();//возвращает количество занятых мест в палате (требует заполненное значение ID)
-	
+	void showAllFreeNum();
 	~MedRoom();
 };

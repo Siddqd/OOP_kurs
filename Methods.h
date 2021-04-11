@@ -78,19 +78,23 @@ void selectItem(char tmp) {
         break;
 
       case '3' :
-
-        break;
+          medR.showAllFreeNum();
+          std::cout << "\nPress Enter to continue";
+          getchar();getchar();
+          break;
         
       case '4' :
           medP.AddNewData("filePatient.txt");
-        break;
+          break;
 
       case '5' :
-          std::cout << "Enter ID patient to change/delete : ";
           medR.lookFreeNum(); //находим номер первой свободной палаты
-          std::cout << "Nearest free room № : " << medR.getIDR() << " and " << medR.getNum() << " places are taked";
+          std::cout << "Nearest free room # : " << medR.getID() << " and " << medR.getSum() << " places are taked\n";
+          //std::cout << "Enter ID patient to change/delete : ";
+          //std::cin >> bufInt;
+          //medP.setID(bufInt);
           medP.changeData("filePatient.txt");
-        break;
+          break;
 
       case '6' :
 
