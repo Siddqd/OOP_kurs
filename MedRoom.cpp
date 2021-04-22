@@ -19,6 +19,42 @@ int getIDR() {
 int getNum() {
 	return sum;
 }*/
+int MedRoom::chgFileRoom() {
+	std::string bar;
+	int idr,sumr;
+	std::fstream fRoom("fileRoom.txt");
+	while (!fRoom.eof())
+	{
+		fRoom >> bar;
+		if (bar == "IDR") {
+			fRoom >> idr >> sum;
+			if (idr == id) {
+				if (sum >= 4) { //палата переполнена
+					std::cerr << "Erorr Room overhead";
+					return -1;
+				}
+				break;
+			}
+		}
+	}
+	fRoom.close();
+	fRoom.open("fileRoom.txt");
+	while (!fRoom.eof())
+	{
+		fRoom >> bar;
+		if (bar == "IDR") {
+			fRoom >> idr;
+			if (idr == id) {
+				++sum;
+				fRoom <<" "<< sum;
+				fRoom.close();
+				return 0;
+			}
+
+		}
+	}
+	return -1;
+}
 
 int MedRoom::lookFreeNum()//записывает в элемент класса номер первой не полностью занятой палаты и количество занятых мест в ней
 {
@@ -30,14 +66,14 @@ int MedRoom::lookFreeNum()//записывает в элемент класса номер первой не полность
 	try {
 		//проверка открытия файла
 		if (fPat.eof()) throw 0;
-		fPat >> sum_pat;						//считали текущее общее количество пациентов
+		fPat >> idpp;						//считали текущее общее количество пациентов
+		fPat >> sum_pat;					// считали последний занятый ID пациента
 		if (sum_pat >= MaxPatient) throw "sorrY_Clinic_Overflow"; //если больше равно макс - клиника переполнена
-		fPat >> idpp;					// считали последний занятый ID пациента
-
 	}
 	catch (const char* er) { std::cout << er;return -1; }
 	catch (int e) {
 		std::cerr << "fileID.txt пуст - вызывайте сиську ";
+		return -1;
 	}	//переходим сюда если файл пуст
 	
 	std::fstream fRoom("fileRoom.txt");

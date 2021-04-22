@@ -28,15 +28,15 @@ void mainMenu() {
 
   std::cout<<" 1) View patient info /using fio & bday or ID >> \n";
 
-  std::cout<<" 2) View med.card info /using Med_Card_ID >> \n";
+  //std::cout<<" 2) !@#$%^&*()_+ >> \n";
 
-  std::cout<<" 3) View list of free Med_rooms(chambers) >> \n";
+  std::cout<<" 2) View list of free Med_rooms(chambers) >> \n";
                                                         //сначала добавляем пациента, потом мед карту
-  std::cout<<" 4) Add new med.card/patient >> \n";    //если уже существует, изменяем данные(номер палаты, лечящего врача
+  std::cout<<" 3) Add new med.card/patient >> \n";    //если уже существует, изменяем данные(номер палаты, лечящего врача
                                                     //, дописываем историю болезни)
-  std::cout<<" 5) Change the patient info(status or add new recs) >> \n";       //выписка пациента - освобождение палаты, смена статуса
+  std::cout<<" 4) Change the patient info(status or add new recs) >> \n";       //выписка пациента - освобождение палаты, смена статуса
 
-  std::cout<<" 6) Change Doc info >> \n";
+  std::cout<<" 5) Fast Exit >> \n";
 
   std::cout<<" 0) Follow for the white rabbit ... \n";
 };
@@ -73,21 +73,28 @@ void selectItem(char tmp) {
         system("pause");
         break;
 
-      case '2' :
+      case '11' :
         system("cls");
         break;
 
-      case '3' :
+      case '2' :
           medR.showAllFreeNum();
           std::cout << "\nPress Enter to continue";
           getchar();getchar();
           break;
         
-      case '4' :
+      case '3' :
+          medR.lookFreeNum(); //находим номер первой свободной палаты
+          std::cout << "Nearest free room # : " << medR.getID() << " and " << medR.getSum() << " places are taked\n";
+          //не совсем правильно, нужно было ввод сделать здесь в переменные , потом через setter положить в класс medP и потом записать в файл :)
           medP.AddNewData("filePatient.txt");
+          if (medP.getStatus() == 1) {
+              medR.setID(medP.getRoom_id());
+              medR.chgFileRoom();
+          }
           break;
 
-      case '5' :
+      case '4' :
           medR.lookFreeNum(); //находим номер первой свободной палаты
           std::cout << "Nearest free room # : " << medR.getID() << " and " << medR.getSum() << " places are taked\n";
           //std::cout << "Enter ID patient to change/delete : ";
@@ -96,8 +103,8 @@ void selectItem(char tmp) {
           medP.changeData("filePatient.txt");
           break;
 
-      case '6' :
-
+      case '5' :
+        return;
         break;
 
       case '0' :
@@ -106,6 +113,7 @@ void selectItem(char tmp) {
         break;
       default:
         std::cout<<"Oops! Press num baby one more time >> from 1 to 6 or 0 >> ";
+        system("pause");
         system("cls");
         mainMenu();
     }

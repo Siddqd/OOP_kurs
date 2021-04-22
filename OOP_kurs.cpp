@@ -18,7 +18,7 @@ int main() {
     std::cin>>tmpp;
     selectItem(tmpp);
     system("cls");
-  } while (tmpp != '0');
+  } while (tmpp != '5');
   return 0;
 }
 

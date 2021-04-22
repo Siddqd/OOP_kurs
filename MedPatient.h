@@ -7,7 +7,7 @@ class MedPatient :
     public MedHuman
 {
 private:
-    int status;			//0 - умер, 1 - на лечении, 2 - выписан (-1 нет в базе данных)
+    int status;			//0 - потерялся, 1 - на лечении, 2 - выписан (-1 нет в базе данных)
     int room_id;
     //int rec_ID; rec_ID = pat_ID
     int doc_id;
@@ -25,13 +25,13 @@ public:
     int getID() { return id; }
     void setID(int idd) { id = idd; }
 
-    int getStatus();
+    int getStatus() { return status; }
     void setStatus(int statuss);
 
-    int64_t getRoom_id();
-    void setRoom_id(int64_t room_idd);
+    int getRoom_id() { return room_id; }
+    void setRoom_id(int room_idd) { room_id = room_idd; }
 
-    int64_t getDoc_id();
+    int getDoc_id();
     
     void setDoc_id(int doc_idd);
 
