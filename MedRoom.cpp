@@ -21,28 +21,33 @@ int getNum() {
 }*/
 int MedRoom::chgFileRoom() {
 	std::string bar;
+	std::string bigbar ="";
+	//bigbar.resize(500);
 	int idr,sumr;
 	std::fstream fRoom("fileRoom.txt");
 	while (!fRoom.eof())
 	{
 		fRoom >> bar;
+		bigbar += bar;
 		if (bar == "IDR") {
 			fRoom >> idr >> sum;
 			if (idr == id) {
 				if (sum >= 4) { //палата переполнена
 					std::cerr << "Erorr Room overhead";
+					system("pause");
 					return -1;
 				}
-				break;
+				++sum;
 			}
+			bigbar +=" " + std::to_string(idr) + " "+ std::to_string(sum)+"\n";
 		}
 	}
 	fRoom.close();
-	fRoom.open("fileRoom.txt");
-	while (!fRoom.eof())
-	{
-		fRoom >> bar;
-		if (bar == "IDR") {
+	std::ofstream fRwr("fileRoom.txt");
+	//while (!fRwr.eof())
+	//{
+		fRwr << bigbar;
+	/*	if (bar == "IDR") {
 			fRoom >> idr;
 			if (idr == id) {
 				++sum;
@@ -52,7 +57,7 @@ int MedRoom::chgFileRoom() {
 			}
 
 		}
-	}
+	}*/
 	return -1;
 }
 
