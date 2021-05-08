@@ -19,7 +19,7 @@ int getIDR() {
 int getNum() {
 	return sum;
 }*/
-int MedRoom::chgFileRoom() {
+int MedRoom::chgFileRoom(int num) {
 	std::string bar;
 	std::string bigbar ="";
 	//bigbar.resize(500);
@@ -37,7 +37,7 @@ int MedRoom::chgFileRoom() {
 					system("pause");
 					return -1;
 				}
-				++sum;
+				sum+=num;
 			}
 			bigbar +=" " + std::to_string(idr) + " "+ std::to_string(sum)+"\n";
 		}

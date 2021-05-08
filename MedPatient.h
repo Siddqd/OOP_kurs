@@ -21,7 +21,7 @@ public:
         int64_t tell, int64_t res_tell, int64_t poliss);//нужно вернуть IDpatient, вызов записи из MedHistory
     MedPatient(int idpp, std::string fioo, Data bdayy,
         int tell, int res_tell, int64_t poliss, int status, int room_id, int doc_id);
-    
+    int setData(int idpp);
     int getID() { return id; }
     void setID(int idd) { id = idd; }
 

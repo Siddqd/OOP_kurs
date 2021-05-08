@@ -18,6 +18,6 @@ public:
 	int lookFreeNum();//уст-ет значения класса номер и кол-во занятых мест первой не заполненой полностью палаты(не требует входных данных)
 	void getRoomNum();//возвращает количество занятых мест в палате (требует заполненное значение ID)
 	void showAllFreeNum();
-	int chgFileRoom();
+	int chgFileRoom(int num);
 	~MedRoom();
 };

@@ -148,7 +148,56 @@ int MedPatient::look4(const char* filePat) { //fio2 поиск по фио и Д
 	return -1;
 }
 
+int MedPatient::setData(int idpp) {
+	int foo32;												//итоговый результат запись всех найденных данных в объект
+	int64_t foo64;
+	Data bdres;
+	std::string bar;
+	std::string foo;
 
+	std::fstream fPat("filePatient.txt");
+
+
+	try {									        					//и сравниваем со значениями в файле пациентов
+
+		if (!fPat.is_open()) throw "Error_OpenFile";
+		if (fPat.eof()) throw "Error_filePatient_is_EMPTY";
+	}
+	catch (const char* er) { std::cout << er; fPat.close(); return 11; }
+
+	//fPat>>bar;                    // считываем первую строку - общее кол-во пациентов
+	//fPat>>bar;										// 2ю строку - номер крайнего пациента
+																		//просто для пролистывания,хотя можно и вывести
+	id = idpp;
+	while (!fPat.eof()) {
+		fPat >> bar;										//считываем сигнатуру IDP
+		if (bar == "IDP") {
+			fPat >> foo32;
+			if (idpp == foo32) {
+				fPat >> bar;
+				if (bar == "FIO")
+				{	
+					try {
+						fPat.get();
+						getline(fPat, fio);//считали фамилию , но с пробелом в начале
+						fPat >> bar;		//считали 
+						if (bar == "BDAY") { fPat >> bdres.day >> bdres.month >> bdres.year; }		//если да, если нет ошибка :[]
+						else throw "Oops ... shit happens :|";
+						fPat >> bar; if (bar == "TEL") fPat >> tel; else throw "Oops ... shit happens :|";
+						fPat >> bar; if (bar == "RES_TEL") fPat >> res_tel; else throw "Oops ... shit happens :|";
+						fPat >> bar; if (bar == "POLIS") fPat >> polis; else throw "Oops ... shit happens :|";
+						fPat >> bar; if (bar == "STATUS") fPat >> status; else throw "Oops ... shit happens :|";
+						fPat >> bar; if (bar == "ROOM_ID") fPat >> room_id; else throw "Oops ... shit happens :|";
+						fPat >> bar; if (bar == "DOC_ID") fPat >> status; else throw "Oops ... shit happens :|";
+						return 0;
+					}
+					catch (const char* er) { std::cout << er;fPat.close();return 11; }
+				}
+			}
+		}
+	}
+	return 11;
+}
 																										//плюс альтернативный поис по ID
 int MedPatient::ShowDataScr(const char* filePat) { //fio2 поиск по фио и ДР, предварительно создаем объект пациент
 	int idpp = -1;										// , куда записываем фио и полис
@@ -221,8 +270,8 @@ int MedPatient::ShowDataScr(const char* filePat) { //fio2 поиск по фио
 			std::cout<<"Patient phone number : "<<tel<<'\n';
 			std::cout<<"Phone number of relatives : "<<res_tel<<'\n';
 			std::cout<<"Polis num : "<<polis<<'\n';
-			if (status==0) std::cout<<"Sry, patient is game over ..";
-			if (status==2) std::cout<<"Patient was discharged out ..";
+			if (status==0) std::cout<<"Patient was discharged out ..";
+			if (status==2) std::cout<< "Sry, patient is game over ..";
 			if (status==1) std::cout<<"Patient now in chamber num : " <<room_id<<'\n';
 			
 			fPat.close();
@@ -310,7 +359,7 @@ int MedPatient::changeData(const char* filePat) {
 		if (!fPat.is_open()) throw "Error_OpenFile";
 		if (fPat.eof()) throw "Error_filePatient_is_EMPTY";
 	}
-	catch (const char* er) { std::cout << er; fPat.close(); return -1; }
+	catch (const char* er) { std::cout << er; fPat.close(); return 11; }
 
 	std::ofstream f2Pat;
 	f2Pat.open("buf.txt", std::ofstream::out, std::ofstream::trunc);
@@ -322,9 +371,9 @@ int MedPatient::changeData(const char* filePat) {
 		if (!f2Pat.is_open()) throw "Error_OpenFile";
 		if (fPat.eof()) throw "Error_filePatient_is_EMPTY";
 	}
-	catch (const char* er) { std::cout << er; f2Pat.close(); return -1; }
+	catch (const char* er) { std::cout << er; f2Pat.close(); return 11; }
 	
-	std::cout << "Enter ID Patient to change : ";
+	
 	std::cin >> id;					//считали id пациента, данные которого хотим поменять
 	//fPat>>bar;                    // считываем первую строку - общее кол-во пациентов
 	//fPat>>bar;										// 2ю строку - номер крайнего пациента
@@ -341,7 +390,7 @@ int MedPatient::changeData(const char* filePat) {
 	}
 	if (len == 1) {
 		std::cerr << "Error 404 ! No Data about entered ID :|";
-		return -1;
+		return 11;
 	}
 	//len = fPat.tellg();
 	//buffer = new char[len];
@@ -353,11 +402,11 @@ int MedPatient::changeData(const char* filePat) {
 		f2Pat << foo;
 	}
 
-	//перед удалением статус должен быть = 0
+	//перед удалением статус должен быть = 0 или 2
 	std::cout << "Enter 0 to delete patient, or 1 to make change : ";
 	std::cin >> foo32;
 	if (foo32==0)	//пропускаем 9 строк и начинаем запись во второй файл до конца файла
-		for (int i = 0;i < 8;i++) 
+		for (int i = 0;i < 8;i++) //возможна ошибка при данном способе пролистывания , если появится пустая строка
 			getline(fPat,foo);
 	
 	else {	//сюда попадаем если нужно изменять даунные пациента
@@ -457,9 +506,9 @@ int MedPatient::changeData(const char* filePat) {
 	rename(filePat, "1.txt");
 	rename("buf.txt", filePat);
 	remove("1.txt");
-	
+	return 0;
 	//перевод пациента в другую палату
-	if (old_stat == new_stat == 1 && old_room != new_room) {
+	/*if (old_stat == new_stat == 1 && old_room != new_room) {
 		std::fstream f4Pat("fileRoom.txt");
 		try {
 			if (!f4Pat.is_open()) throw "Error_OpenFile fileRoom";
@@ -499,13 +548,13 @@ int MedPatient::changeData(const char* filePat) {
 			if (!f3Pat.is_open()) throw "Error_OpenFile fileID";
 			if (f3Pat.eof()) throw "Error_fileID_is_EMPTY";
 		}
-		catch (const char* er) { std::cout << er; f3Pat.close(); return -1; }
+		catch (const char* er) { std::cout << er; f3Pat.close(); return 11; }
 		std::fstream f4Pat("fileRoom.txt");
 		try {
 			if (!f4Pat.is_open()) throw "Error_OpenFile fileRoom";
 			if (f4Pat.eof()) throw "Error_fileRoom_is_EMPTY";
 		}
-		catch (const char* er) { std::cout << er; f4Pat.close(); f3Pat.close(); return -1; }
+		catch (const char* er) { std::cout << er; f4Pat.close(); f3Pat.close(); return 11; }
 
 		if (old_stat == 1 || (old_stat == 0 && new_stat == 1)) {
 			f3Pat >> bar >> bar32; //меняем значение общ количества пациентов в больнице
@@ -532,12 +581,14 @@ int MedPatient::changeData(const char* filePat) {
 				if (bar32 == new_room) break;
 				f4Pat >> bar32; //пропускаем кол-во пациентов в палате для перехода к след палате
 			} while (!f4Pat.eof());
-			f4Pat << ' ' << foo32; //перезаписали новое уменьшенное количество пациентов
+			f4Pat << ' ' << foo32; //перезаписали новое уменьшенное количество пациентов*/
+	/*
 		}
 		f4Pat.close();
-	}
+	}*/
 	//fPat.read(buffer, len);
 	//f2Pat.write(buffer, len);
 	//delete[] buffer;
-	return 0;
+	//if (old_stat==new_stat)
+	//return 0;
 }

@@ -46,6 +46,7 @@ void selectItem(char tmp) {
   MedPatient medP;
   Data bufDat;
   int bufInt;
+  int oldSt,newSt,oldRoom,newRoom;
   std::string bufStr;
 
     switch(tmp) {
@@ -90,17 +91,29 @@ void selectItem(char tmp) {
           medP.AddNewData("filePatient.txt");
           if (medP.getStatus() == 1) {
               medR.setID(medP.getRoom_id());
-              medR.chgFileRoom();
+              medR.chgFileRoom(1);
           }
           break;
 
       case '4' :
           medR.lookFreeNum(); //находим номер первой свободной палаты
           std::cout << "Nearest free room # : " << medR.getID() << " and " << medR.getSum() << " places are taked\n";
-          //std::cout << "Enter ID patient to change/delete : ";
-          //std::cin >> bufInt;
-          //medP.setID(bufInt);
+          std::cout << "Enter ID patient to change/delete : ";
+          std::cin >> bufInt;
+          medP.setData(bufInt);
+          oldRoom=medP.getRoom_id();
+          oldSt=medP.getStatus();
           medP.changeData("filePatient.txt");
+          newSt = medP.getStatus();
+          newRoom = medP.getRoom_id();
+          if (oldSt == 0 && newSt == 1) {                   //возврат пациента в клинику
+              medR.setID(newRoom); medR.chgFileRoom(1);
+          }
+          if (oldSt == newSt == 1 && oldRoom != newRoom) { //перевод в другую палату
+              medR.setID(oldRoom); medR.chgFileRoom(-1);
+              medR.setID(newRoom); medR.chgFileRoom(1);
+          }
+          if (oldSt==1 && (newSt==0 || newSt==2)) { medR.setID(oldRoom); medR.chgFileRoom(-1); } //изм статуса пациента на вне больниц/умер
           break;
 
       case '5' :
