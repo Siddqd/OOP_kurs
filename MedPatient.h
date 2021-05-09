@@ -42,7 +42,9 @@ public:
     int AddNewData(const char* ) ; //возвращает -1 при fail
 
     int changeData(const char*);
-    //int DeleteData(const char*);
+
+
+    int delData(const char*);
 
     //int RewriteData(const char*);
 

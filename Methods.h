@@ -36,9 +36,11 @@ void mainMenu() {
                                                     //, дописываем историю болезни)
   std::cout<<" 4) Change the patient info(status or add new recs) >> \n";       //выписка пациента - освобождение палаты, смена статуса
 
-  std::cout<<" 5) Fast Exit >> \n";
+  std::cout<<" 5) Del the patient info (by ID) >> \n";
 
-  std::cout<<" 0) Follow for the white rabbit ... \n";
+  std::cout<<" 0) Fast Exit >> \n";
+
+  std::cout<<" r) Follow for the white rabbit ... \n";
 };
 
 void selectItem(char tmp) {
@@ -98,14 +100,14 @@ void selectItem(char tmp) {
       case '4' :
           medR.lookFreeNum(); //находим номер первой свободной палаты
           std::cout << "Nearest free room # : " << medR.getID() << " and " << medR.getSum() << " places are taked\n";
-          std::cout << "Enter ID patient to change/delete : ";
+          std::cout << "Enter ID patient to change info : ";
           std::cin >> bufInt;
-          medP.setData(bufInt);
+          medP.setData(bufInt); //запись в элемент класса всех данных о текущем пацинете
           oldRoom=medP.getRoom_id();
           oldSt=medP.getStatus();
           medP.changeData("filePatient.txt");
           newSt = medP.getStatus();
-          newRoom = medP.getRoom_id();
+          newRoom = medP.getRoom_id();      //
           if (oldSt == 0 && newSt == 1) {                   //возврат пациента в клинику
               medR.setID(newRoom); medR.chgFileRoom(1);
           }
@@ -115,12 +117,23 @@ void selectItem(char tmp) {
           }
           if (oldSt==1 && (newSt==0 || newSt==2)) { medR.setID(oldRoom); medR.chgFileRoom(-1); } //изм статуса пациента на вне больниц/умер
           break;
+        
+      case '5':
+          std::cout << "Enter ID patient to delete info : ";
+          std::cin >> bufInt;
+          medP.setData(bufInt);
+          if (medP.getStatus() == 1) {
+              medR.setID(medP.getRoom_id());
+              medR.chgFileRoom(-1);
+          }
+          medP.delData("filePatinet.txt");
+          break;
 
-      case '5' :
+      case '0' :
         return;
         break;
 
-      case '0' :
+      case 'r' :
         rabbit();
         return;
         break;
