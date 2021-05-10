@@ -71,7 +71,8 @@ void selectItem(char tmp) {
         }
 
 
-        if (medP.ShowDataScr("D:\\wrk\\OOP_kurs\\filePatient.txt") == -1) std::cout <<'\n'<< "ErrorrE";
+        if (medP.ShowDataScr("filePatient.txt") == -1) std::cout <<'\n'<< "ErrorrE";
+
         system("pause");
         break;
 
@@ -105,7 +106,7 @@ void selectItem(char tmp) {
           medP.setData(bufInt); //запись в элемент класса всех данных о текущем пацинете
           oldRoom=medP.getRoom_id();
           oldSt=medP.getStatus();
-          medP.changeData("D:\\wrk\\OOP_kurs\\filePatient.txt");
+          medP.changeData("filePatient.txt");
           newSt = medP.getStatus();
           newRoom = medP.getRoom_id();      //
           if (oldSt == 0 && newSt == 1) {                   //возврат пациента в клинику
@@ -126,7 +127,7 @@ void selectItem(char tmp) {
               medR.setID(medP.getRoom_id());
               medR.chgFileRoom(-1);
           }
-          medP.delData("D:\\wrk\\OOP_kurs\\filePatient.txt");
+          medP.delData("filePatient.txt");
           break;
 
       case '0' :

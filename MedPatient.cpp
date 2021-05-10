@@ -76,7 +76,7 @@ int MedPatient::look4(const char* filePat) { //fio2 поиск по фио и Д
 	std::string foo;
 
 	std::fstream fPat;
-	fPat.open("D:\\wrk\\OOP_kurs\\filePatient.txt");
+	fPat.open("filePatient.txt");
 
     try {									        					
 		if (fPat.is_open()) throw "Error_OpenFile";
@@ -156,7 +156,7 @@ int MedPatient::setData(int idpp) {
 	std::string foo;
 	char spc;
 
-	std::fstream fPat("D:\\wrk\\OOP_kurs\\filePatient.txt");
+	std::fstream fPat("filePatient.txt");
 
 
 	try {									        					//и сравниваем со значениями в файле пациентов
@@ -260,8 +260,8 @@ int MedPatient::ShowDataScr(const char* filePat) { //fio2 поиск по фио
 				fPat >> bar; if (bar == "POLIS") fPat >> polis; else throw "Oops ... shit happens :|";
 				fPat >> bar; if (bar == "STATUS") fPat >> status; else throw "Oops ... shit happens :|";
 				fPat >> bar; if (bar == "ROOM_ID") fPat >> room_id; else throw "Oops ... shit happens :|";
-				fPat >> bar; if (bar == "DOC_ID") fPat >> status; else throw "Oops ... shit happens :|";
-				//fPat >> foo32; if (foo=="STATUS") fPat>>status; else throw "Oops ... shit happens :|"
+				fPat >> bar; if (bar == "DOC_ID") fPat >> doc_id; else throw "Oops ... shit happens :|";
+				//fPat >> foo32; if (foo == "STATUS") fPat >> status; else throw "Oops ... shit happens :|";
 
 			} catch (const char* er) { std::cout << er;fPat.close();return -1; }
 			
@@ -275,8 +275,8 @@ int MedPatient::ShowDataScr(const char* filePat) { //fio2 поиск по фио
 			if (status==0) std::cout<<"Patient was discharged out ..";
 			if (status==2) std::cout<< "Sry, patient is game over ..";
 			if (status==1) std::cout<<"Patient now in chamber num : " <<room_id<<'\n';
-			std::cout << "doc id : " << doc_id;
-			std::cout << ""
+			std::cout << "doc id : " << doc_id<<'\n';
+			//std::cout << "";
 
 			fPat.close();
 			return id; //возвращаем # id пациента - соответсвует номеру мед карты
@@ -290,17 +290,16 @@ int MedPatient::ShowDataScr(const char* filePat) { //fio2 поиск по фио
 int MedPatient::AddNewData(const char* filePat) {
 	std::string bar;
 	int idpp = 0, sum_pat = 0;
-	std::fstream fPat("D:\\wrk\\OOP_kurs\\fileID.txt",std::ios::in|std::ios::beg);
+	std::fstream fPat("fileID.txt",std::ios::in|std::ios::beg);
 	//fPat.close();
 	//fPat.open(filePat, std::ios::in );	//открываем файл для чтения
 	
 	try {
 			//проверка открытия файла
 		if (fPat.eof()) throw 0;		
-		fPat >> sum_pat;						//считали текущее общее количество пациентов
+		fPat >> idpp;						//считали текущее общее количество пациентов
+		fPat >> sum_pat;					// считали последний занятый ID пациента
 		if (sum_pat >= MaxPatient) throw "sorrY_Clinic_Overflow"; //если больше равно макс - клиника переполнена
-		fPat >> idpp;					// считали последний занятый ID пациента
-		
 	}
 	catch (const char* er) { std::cout << er;return -1; }
 	catch (int e) { }	//переходим сюда если файл пуст
@@ -308,8 +307,8 @@ int MedPatient::AddNewData(const char* filePat) {
 	++idpp;			//записываем ID для нового-текущего пациента
 		//fPat.seekg(0, std::ios::beg);//встаем в начало файла
 	fPat.close();
-	fPat.open("D:\\wrk\\OOP_kurs\\fileID.txt", std::ios::out|std::ios::beg); //открываем для файл для записи
-	fPat << sum_pat <<" "<< idpp;	//пишем новое значения общего числа пациентов и номер нового крайнего
+	fPat.open("fileID.txt", std::ios::out|std::ios::beg); //открываем для файл для записи
+	fPat << idpp <<" "<< sum_pat;	//пишем номер нового крайнего и новое значения общего числа пациентов
 	fPat.close();
 	id = idpp;
 	//ввод данных нового пациента
@@ -340,9 +339,9 @@ int MedPatient::AddNewData(const char* filePat) {
 
 	fPat.clear();
 	fPat.open(filePat,std::ios::app);	//добавляем нового пациента в конец файла
-	fPat <<"\nIDP " << id << "\nFIO "<< fio<< "\nBDAY " <<bday.day<<" "<<bday.month<<" "<<
+	fPat <<"IDP " << id << "\nFIO "<< fio<< "\nBDAY " <<bday.day<<" "<<bday.month<<" "<<
 		bday.year<<"\nTEL "<<tel<<"\nRES_TEL "<<res_tel<<"\nPOLIS "<<polis
-		<<"\nSTATUS "<<status<<"\nROOM_ID " <<room_id<<"\nDOC_ID "<<doc_id;
+		<<"\nSTATUS "<<status<<"\nROOM_ID " <<room_id<<"\nDOC_ID "<<doc_id<<'\n';
 	fPat.close();
 	return 0;
 }
@@ -368,10 +367,10 @@ int MedPatient::changeData(const char* filePat) {
 	catch (const char* er) { std::cout << er; fPat.close(); return 11; }
 
 	std::ofstream f2Pat;
-	f2Pat.open("D:\\wrk\\OOP_kurs\\buf.txt", std::ofstream::out, std::ofstream::trunc);
+	f2Pat.open("buf.txt", std::ofstream::out, std::ofstream::trunc);
 	f2Pat.clear();
 	f2Pat.close();
-	f2Pat.open("D:\\wrk\\OOP_kurs\\buf.txt", std::ofstream::out);
+	f2Pat.open("buf.txt", std::ofstream::out);
 	try {									        					//и сравниваем со значениями в файле пациентов
 
 		if (!f2Pat.is_open()) throw "Error_OpenFile";
@@ -498,9 +497,9 @@ int MedPatient::changeData(const char* filePat) {
 	}
 	fPat.close();
 	f2Pat.close();
-	rename(filePat, "D:\\wrk\\OOP_kurs\\1.txt");
-	rename("D:\\wrk\\OOP_kurs\\buf.txt", filePat);
-	remove("D:\\wrk\\OOP_kurs\\1.txt");
+	rename(filePat, "1.txt");
+	rename("buf.txt", filePat);
+	remove("1.txt");
 
 	//перевод пациента в другую палату
 	/*if (old_stat == new_stat == 1 && old_room != new_room) {
@@ -538,7 +537,7 @@ int MedPatient::changeData(const char* filePat) {
 	*/
 	//начинаем изменять файлы fileID, если статус был изменен определеным значением
 	if (old_stat != new_stat) {
-		std::fstream f3Pat("D:\\wrk\\OOP_kurs\\fileID.txt");
+		std::fstream f3Pat("fileID.txt");
 		try {
 			if (!f3Pat.is_open()) throw "Error_OpenFile fileID";
 			if (f3Pat.eof()) throw "Error_fileID_is_EMPTY";
@@ -556,7 +555,7 @@ int MedPatient::changeData(const char* filePat) {
 			if (old_stat == 1) --bar32; else ++bar32;
 			//f3Pat.clear();
 			f3Pat.close();
-			f3Pat.open("D:\\wrk\\OOP_kurs\\fileID.txt");
+			f3Pat.open("fileID.txt");
 			f3Pat << bar << ' ' << bar32;
 			f3Pat.close();
 		}
@@ -608,12 +607,12 @@ int MedPatient::delData(const char* filePat) {
 	}
 	catch (const char* er) { std::cout << er; fPat.close(); return 11; }
 
-	std::ofstream f2Pat;
-	f2Pat.open("D:\\wrk\\OOP_kurs\\buf.txt", std::ofstream::out, std::ofstream::trunc);
-	f2Pat.clear();
-	f2Pat.close();
+	std::fstream f2Pat;
+	f2Pat.open("buf.txt", std::fstream::trunc | std::fstream::out);
+	//f2Pat.clear();
+	//f2Pat.close();
 
-	f2Pat.open("D:\\wrk\\OOP_kurs\\buf.txt", std::ofstream::out);
+	//f2Pat.open("buf.txt");
 	try {									        					
 		if (!f2Pat.is_open()) throw "Error_OpenFile";
 		if (fPat.eof()) throw "Error_filePatient_is_EMPTY";
@@ -657,12 +656,12 @@ int MedPatient::delData(const char* filePat) {
 	}
 	fPat.close();
 	f2Pat.close();
-	rename(filePat, "D:\\wrk\\OOP_kurs\\1.txt");
-	rename("D:\\wrk\\OOP_kurs\\buf.txt", filePat);
-	remove("D:\\wrk\\OOP_kurs\\1.txt");
+	rename(filePat, "1.txt");
+	rename("buf.txt", filePat);
+	remove("1.txt");
 	//изменить fileID если статус = 1
 	if (status == 1) {
-		std::fstream f3Pat("D:\\wrk\\OOP_kurs\\fileID.txt");
+		std::fstream f3Pat("fileID.txt");
 		try {
 			if (!f3Pat.is_open()) throw "Error_OpenFile fileID";
 			if (f3Pat.eof()) throw "Error_fileID_is_EMPTY";
@@ -672,7 +671,7 @@ int MedPatient::delData(const char* filePat) {
 		--bar32;
 		//f3Pat.clear();
 		f3Pat.close();
-		f3Pat.open("D:\\wrk\\OOP_kurs\\fileID.txt");
+		f3Pat.open("fileID.txt");
 		f3Pat << bar << ' ' << bar32;
 		f3Pat.close();
 	}

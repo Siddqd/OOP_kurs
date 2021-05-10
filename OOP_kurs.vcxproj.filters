@@ -70,9 +70,6 @@
     <Text Include="fileMedCard.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
-    <Text Include="buf.txt">
-      <Filter>Файлы ресурсов</Filter>
-    </Text>
     <Text Include="fileRoom.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
