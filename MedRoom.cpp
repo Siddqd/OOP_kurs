@@ -24,7 +24,7 @@ int MedRoom::chgFileRoom(int num) {
 	std::string bigbar ="";
 	//bigbar.resize(500);
 	int idr,sumr;
-	std::fstream fRoom("fileRoom.txt");
+	std::fstream fRoom("D:\\wrk\\OOP_kurs\\fileRoom.txt");
 	while (!fRoom.eof())
 	{
 		fRoom >> bar;
@@ -43,7 +43,7 @@ int MedRoom::chgFileRoom(int num) {
 		}
 	}
 	fRoom.close();
-	std::ofstream fRwr("fileRoom.txt");
+	std::ofstream fRwr("D:\\wrk\\OOP_kurs\\fileRoom.txt");
 	//while (!fRwr.eof())
 	//{
 		fRwr << bigbar;
@@ -67,7 +67,7 @@ int MedRoom::lookFreeNum()//записывает в элемент класса номер первой не полность
 	std::string bar;
 	//вначале нужно проверить есть ли вообще свободные места в больнице ( через fileID
 	int idpp = 0, sum_pat = 0;
-	std::fstream fPat("fileID.txt", std::ios::in | std::ios::beg);
+	std::fstream fPat("D:\\wrk\\OOP_kurs\\fileID.txt", std::ios::in | std::ios::beg);
 	try {
 		//проверка открытия файла
 		if (fPat.eof()) throw 0;
@@ -81,7 +81,7 @@ int MedRoom::lookFreeNum()//записывает в элемент класса номер первой не полность
 		return -1;
 	}	//переходим сюда если файл пуст
 	
-	std::fstream fRoom("fileRoom.txt");
+	std::fstream fRoom("D:\\wrk\\OOP_kurs\\fileRoom.txt");
 	while (!fRoom.eof() && numr >= 4)
 	{
 		fRoom >> bar;
@@ -97,7 +97,7 @@ int MedRoom::lookFreeNum()//записывает в элемент класса номер первой не полность
 	}
 	fRoom.close();
 	if (idr == -1) { //если не нашли незанятую палату, то создаем(подготавливаем) новую комнату, либо в начале(если файл пуст), либо в конце.
-		fRoom.open("fileRoom.txt", std::ios::app);
+		fRoom.open("D:\\wrk\\OOP_kurs\\fileRoom.txt", std::ios::app);
 		(last == 0) ? fRoom << "IDR " : fRoom << "\nIDR ";
 		fRoom << ++last << ' ' << 0;
 		setID(last);
@@ -113,7 +113,7 @@ void MedRoom::showAllFreeNum() {
 		std::string bar;
 		//вначале нужно проверить есть ли вообще свободные места в больнице ( через fileID
 		int idpp = 0, sum_pat = 0;
-		std::fstream fPat("fileID.txt", std::ios::in | std::ios::beg);
+		std::fstream fPat("D:\\wrk\\OOP_kurs\\fileID.txt", std::ios::in | std::ios::beg);
 		try {
 			//проверка открытия файла
 			if (fPat.eof()) throw 0;
@@ -127,7 +127,7 @@ void MedRoom::showAllFreeNum() {
 			std::cerr << "fileID.txt пуст - вызывайте сиську ";
 		}	//переходим сюда если файл пуст
 		std::cout << "\nfree MedRooms num : \n";
-		std::fstream fRoom("fileRoom.txt");
+		std::fstream fRoom("D:\\wrk\\OOP_kurs\\fileRoom.txt");
 		while (!fRoom.eof())
 		{
 			fRoom >> bar;

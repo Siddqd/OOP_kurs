@@ -59,7 +59,7 @@ void selectItem(char tmp) {
         std::cout<<"(Enter ID = 0 to search by FIO and  bday date) >> ";
         std::cin >> bufInt;
         medP.setID(bufInt);
-        if (medP.getID()==0) {
+        if (bufInt==0) {
             std::cout<<"Enter FIO(throw space) : ";
             getchar();
             getline(std::cin,bufStr);
@@ -68,16 +68,16 @@ void selectItem(char tmp) {
             std::cout<<"(to search just by FIO, enter the bday day = 0)";
             std::cin >> bufDat.day >> bufDat.month >> bufDat.year;
             medP.setBday(bufDat);
-          
         }
 
 
-        if (medP.ShowDataScr("filePatient.txt") == -1) std::cout <<'\n'<< "ErrorrE";
+        if (medP.ShowDataScr("D:\\wrk\\OOP_kurs\\filePatient.txt") == -1) std::cout <<'\n'<< "ErrorrE";
         system("pause");
         break;
 
       case '11' :
-        system("cls");
+          std::cerr << "Crya! sistem failed !";
+          system("pause");
         break;
 
       case '2' :
@@ -105,7 +105,7 @@ void selectItem(char tmp) {
           medP.setData(bufInt); //запись в элемент класса всех данных о текущем пацинете
           oldRoom=medP.getRoom_id();
           oldSt=medP.getStatus();
-          medP.changeData("filePatient.txt");
+          medP.changeData("D:\\wrk\\OOP_kurs\\filePatient.txt");
           newSt = medP.getStatus();
           newRoom = medP.getRoom_id();      //
           if (oldSt == 0 && newSt == 1) {                   //возврат пациента в клинику
@@ -126,7 +126,7 @@ void selectItem(char tmp) {
               medR.setID(medP.getRoom_id());
               medR.chgFileRoom(-1);
           }
-          medP.delData("filePatinet.txt");
+          medP.delData("D:\\wrk\\OOP_kurs\\filePatient.txt");
           break;
 
       case '0' :
