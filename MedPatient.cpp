@@ -386,7 +386,7 @@ int MedPatient::changeData(const char* filePat) {
 		fPat >> bar;		//считываем сигнатуру IDP
 		if (bar != "IDP") continue;		//проверяем сигнатуру IDP, если нет то сначала //варик ? for(;bar!="IDP";	fPat>>bar)
 		fPat >> idpp;										//считали ID текущего пациента
-		if (id == idpp) { //нужный пациент
+		if (id == idpp) { //если нужный пациент
 			//сюда вставляем запросы с заменой
 			f2Pat << "IDP " << id << '\n';
 			fPat >> bar;//считали "FIO"
@@ -448,6 +448,7 @@ int MedPatient::changeData(const char* filePat) {
 			f2Pat << "STATUS " << new_stat << '\n';
 			fPat >> bar;
 			fPat >> old_room; //переместились, в bar32 текущий номер палаты
+			room_id = old_room;
 			if (old_stat == 1 && old_stat != new_stat) { //если пациент был выписан из больницы или умер, меняем номер палаты на 0
 				std::cout << "MedRoom # wil autoset in 0 (patient is out of coverage) \n";
 				f2Pat << "ROOM_ID " << 0 << '\n';
@@ -472,11 +473,13 @@ int MedPatient::changeData(const char* filePat) {
 			len = -1;
 			continue;
 		}
-		f2Pat << "IDP " << idpp << '\n';
-		getline(fPat, foo);
-		for (int i = 0;i < 8;i++) {
+		else {			//если id другого пациента, копируем данные в buf.txt
+			f2Pat << "IDP " << idpp << '\n';
 			getline(fPat, foo);
-			f2Pat << foo << '\n';
+			for (int i = 0;i < 8;i++) {
+				getline(fPat, foo);
+				f2Pat << foo << '\n';
+			}
 		}
 	}
 	if (len == 1) {

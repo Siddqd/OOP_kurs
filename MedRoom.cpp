@@ -28,18 +28,17 @@ int MedRoom::chgFileRoom(int num) {
 	while (!fRoom.eof())
 	{
 		fRoom >> bar;
-		bigbar += bar;
 		if (bar == "IDR") {
 			fRoom >> idr >> sum;
 			if (idr == id) {
-				if (sum >= 4) { //палата переполнена
+				if (sum >= 4 && num==1) { //палата переполнена
 					std::cerr << "Erorr Room overhead";
 					system("pause");
 					return -1;
 				}
 				sum+=num;
 			}
-			bigbar +=" " + std::to_string(idr) + " "+ std::to_string(sum)+"\n"; //записываем все данные из файла в большой стринг
+			bigbar +="IDR " + std::to_string(idr) + " "+ std::to_string(sum)+"\n"; //записываем все данные из файла в большой стринг
 		}
 	}
 	fRoom.close();
